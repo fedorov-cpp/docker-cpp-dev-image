@@ -1,0 +1,36 @@
+# syntax=docker/dockerfile:1
+FROM centos:8.4.2105
+
+RUN yum update -y
+RUN yum install -y dnf-plugins-core
+RUN yum config-manager --set-enabled powertools
+RUN dnf install langpacks-en glibc-all-langpacks -y
+RUN yum install -y \
+    which \
+    openssh openssh-server openssh-clients \
+    git \
+    gcc-toolset-11 \
+    cmake \
+    ninja-build \
+    rsync \
+    tar \
+    dos2unix \
+    openssl-devel openssl \
+    passwd
+
+RUN ssh-keygen -A
+
+RUN ( \
+    echo 'LogLevel DEBUG2'; \
+    echo 'PermitRootLogin yes'; \
+    echo 'PasswordAuthentication yes'; \
+    echo 'Subsystem sftp /usr/libexec/openssh/sftp-server'; \
+  ) > /etc/ssh/sshd_config_test_clion
+
+RUN useradd -m user \
+  && yes password | passwd user
+RUN usermod -s /bin/bash user
+
+RUN echo 'source /opt/rh/gcc-toolset-11/enable' >> /home/user/.bashrc
+
+CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]
