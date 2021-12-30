@@ -16,7 +16,13 @@ RUN yum install -y \
     tar \
     dos2unix \
     openssl-devel openssl \
-    passwd
+    passwd \
+    tmux \
+    vim
+
+# for JetBrains Projector
+RUN dnf install python3 python3-pip python3-pyOpenSSL python3-cryptography -y
+RUN yum install less libXext libXrender libXtst libXi freetype -y
 
 RUN ssh-keygen -A
 
